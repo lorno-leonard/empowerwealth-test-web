@@ -1,5 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'
-import { Col, Collapse, Row, Spin, Typography } from 'antd'
+import { Col, Row, Select, Typography } from 'antd'
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts'
+import styled from '@emotion/styled'
 
 import Container from '@components/Container'
 import Loader from '@components/Loader'
@@ -8,7 +10,18 @@ import usePrevious from '@lib/hooks/usePrevious'
 import { PropertyData } from '@lib/types'
 import apiService from '@services/api'
 
-const { Panel } = Collapse
+type DataSeriesProperyData = {
+  name: string
+  Expense: number
+  Income: number
+}
+
+const PropertySelect = styled(Select)`
+  margin-bottom: 20px;
+  width: 100%;
+`
+
+const { Option } = Select
 const { Title } = Typography
 
 const Home: FC = () => {
@@ -16,7 +29,8 @@ const Home: FC = () => {
   const [properties, setProperties] = useState<PropertyData[]>([])
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [loadingProperty, setLoadingProperty] = useState<boolean>(false)
+  const [, setLoadingProperty] = useState<boolean>(false)
+  const [chartData, setChartData] = useState<DataSeriesProperyData[]>([])
 
   const prevSelectedProperty = usePrevious<PropertyData | null>(selectedProperty)
 
@@ -53,7 +67,19 @@ const Home: FC = () => {
               Authorization: user?.token,
             },
           })
-          setSelectedProperty({ ...response.data?.property } as PropertyData)
+          const propertyData = { ...response.data?.property } as PropertyData
+          setSelectedProperty(propertyData)
+          if (propertyData?.expense) {
+            setChartData(
+              Object.keys(propertyData?.expense).map(
+                (month): DataSeriesProperyData => ({
+                  name: month,
+                  Expense: propertyData?.expense ? propertyData?.expense[month] : 0,
+                  Income: propertyData?.income ? propertyData?.income[month] : 0,
+                })
+              )
+            )
+          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           console.log({ error })
@@ -66,9 +92,8 @@ const Home: FC = () => {
     }
   }, [selectedProperty, user?.token])
 
-  const handleCollapseChange = (key: string | string[]) => {
-    if (typeof key !== 'string') return
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSelectChange = (key: any) => {
     const property = properties.find((obj: PropertyData) => +key === obj.propertyId)
     if (property) {
       setSelectedProperty(property)
@@ -83,9 +108,10 @@ const Home: FC = () => {
 
   useEffect(() => {
     if (
-      selectedProperty &&
-      prevSelectedProperty &&
-      selectedProperty.propertyId !== prevSelectedProperty.propertyId
+      (selectedProperty &&
+        prevSelectedProperty &&
+        selectedProperty.propertyId !== prevSelectedProperty.propertyId) ||
+      (selectedProperty && !prevSelectedProperty)
     ) {
       getSingleProperty()
     }
@@ -101,20 +127,23 @@ const Home: FC = () => {
         <Col span={12} offset={6}>
           {!properties.length && <Title level={3}>No properties found</Title>}
           {!!properties.length && (
-            <Collapse accordion onChange={handleCollapseChange}>
+            <PropertySelect showSearch onChange={handleSelectChange}>
               {properties.map((property) => (
-                <Panel header={property.propertyName} key={property.propertyId}>
-                  {loadingProperty && property.propertyId === selectedProperty?.propertyId && (
-                    <Spin />
-                  )}
-                  {!loadingProperty &&
-                    property.propertyId === selectedProperty?.propertyId &&
-                    !!selectedProperty?.income?.length &&
-                    !!selectedProperty?.expense?.length && <Spin spinning />}
-                </Panel>
+                <Option key={property.propertyId} value={property.propertyId}>
+                  {property.propertyName}
+                </Option>
               ))}
-            </Collapse>
+            </PropertySelect>
           )}
+          <BarChart width={670} height={400} data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Expense" fill="#FCA245" />
+            <Bar dataKey="Income" fill="#1CAD75" />
+          </BarChart>
         </Col>
       </Row>
     </Container>
