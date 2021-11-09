@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react'
-import { Layout, Menu, Typography } from 'antd'
+import Link from 'next/link'
+import { Button, Layout, Menu, Space, Typography } from 'antd'
 import styled from '@emotion/styled'
 
 import { useAppState, useAppDispatch } from '@lib/context/AppContext'
@@ -24,8 +25,16 @@ const LayoutContent = styled(Content)`
 `
 
 const LayoutTitle = styled(Title)`
-  color: #ffffff !important;
   margin-bottom: 0 !important;
+`
+
+const LayoutHeaderBanner = styled('a')`
+  color: #ffffff !important;
+
+  &:active,
+  &:hover {
+    color: #ffffff !important;
+  }
 `
 
 const LayoutMenu = styled(Menu)``
@@ -44,7 +53,11 @@ const MainLayout: FC<Props> = ({ children }) => {
     <Layout>
       {!noHeader && (
         <LayoutHeader>
-          <LayoutTitle>Coding challenge</LayoutTitle>
+          <LayoutTitle level={2}>
+            <Link href="/" passHref>
+              <LayoutHeaderBanner>Coding challenge</LayoutHeaderBanner>
+            </Link>
+          </LayoutTitle>
           {user && (
             <LayoutMenu mode="horizontal">
               <LayoutSubMenu key="header-submenu" title={user.name}>
@@ -53,6 +66,18 @@ const MainLayout: FC<Props> = ({ children }) => {
                 </Menu.Item>
               </LayoutSubMenu>
             </LayoutMenu>
+          )}
+          {!user && (
+            <Space>
+              <Link href="/login" passHref>
+                <Button type="primary">Login</Button>
+              </Link>
+              <Link href="/register" passHref>
+                <Button type="primary" ghost>
+                  Register
+                </Button>
+              </Link>
+            </Space>
           )}
         </LayoutHeader>
       )}

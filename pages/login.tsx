@@ -2,12 +2,12 @@ import React, { FC } from 'react'
 
 import Container from '@components/Container'
 
-const Home: FC = () => {
+const Login: FC = () => {
   return (
     <Container>
-      <h1>Home</h1>
+      <h1>Login</h1>
     </Container>
   )
 }
 
-export default Home
+export default Login
