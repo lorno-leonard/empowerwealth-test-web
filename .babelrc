@@ -1,0 +1,18 @@
+{
+  "presets": [["next/babel"]],
+  "plugins": [
+    ["@emotion"],
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "@components": "./components",
+          "@config": "./config",
+          "@lib": "./lib",
+          "@services": "./services"
+        }
+      }
+    ]
+  ]
+}
