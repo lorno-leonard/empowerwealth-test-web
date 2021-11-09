@@ -73,7 +73,7 @@ const Home: FC = () => {
             setChartData(
               Object.keys(propertyData?.expense).map(
                 (month): DataSeriesProperyData => ({
-                  name: month,
+                  name: month.substring(0, 3),
                   Expense: propertyData?.expense ? propertyData?.expense[month] : 0,
                   Income: propertyData?.income ? propertyData?.income[month] : 0,
                 })
@@ -135,14 +135,14 @@ const Home: FC = () => {
               ))}
             </PropertySelect>
           )}
-          <BarChart width={670} height={400} data={chartData}>
+          <BarChart width={670} height={400} data={chartData} style={{ background: '#ffffff' }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="Expense" fill="#FCA245" />
-            <Bar dataKey="Income" fill="#1CAD75" />
+            <Bar dataKey="Expense" fill="#FCA245" radius={[5, 5, 5, 5]} />
+            <Bar dataKey="Income" fill="#1CAD75" radius={[5, 5, 5, 5]} />
           </BarChart>
         </Col>
       </Row>
