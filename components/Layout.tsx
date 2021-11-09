@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { Button, Layout, Menu, Space, Typography } from 'antd'
 import styled from '@emotion/styled'
 
@@ -44,9 +45,11 @@ const LayoutSubMenu = styled(SubMenu)``
 const MainLayout: FC<Props> = ({ children }) => {
   const { noHeader, user } = useAppState()
   const { setUser } = useAppDispatch()
+  const router = useRouter()
 
   const handleLogout = () => {
     setUser && setUser(null)
+    router.replace('/')
   }
 
   return (

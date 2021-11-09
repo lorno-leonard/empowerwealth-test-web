@@ -1,5 +1,5 @@
-import React, { createContext, FC, useContext, useState } from 'react'
-import type { SetStateAction, Dispatch } from 'react'
+import React, { createContext, FC, useContext, useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 import type { User } from '@lib/types'
 
@@ -14,16 +14,49 @@ export type AppState = {
 }
 
 export type AppDispatch = {
-  setNoHeader?: Dispatch<SetStateAction<boolean>>
-  setUser?: Dispatch<SetStateAction<User>>
+  setNoHeader?: (bool: boolean) => void
+  setUser?: (user: User) => void
 }
 
 const AppStateContext = createContext<AppState | undefined>(undefined)
 const AppDispatchContext = createContext<AppDispatch | undefined>(undefined)
 
+const userStorageKey = 'empowerwealth-test:user'
+
 const AppContextProvider: FC = ({ children }) => {
-  const [noHeader, setNoHeader] = useState<boolean>(initialState.noHeader)
-  const [user, setUser] = useState<User>(initialState.user)
+  const [noHeader, _setNoHeader] = useState<boolean>(initialState.noHeader)
+  const [user, _setUser] = useState<User>(initialState.user)
+  const router = useRouter()
+
+  const setNoHeader = (bool: boolean) => _setNoHeader(bool)
+
+  const setUser = (user: User) => {
+    if (typeof window !== 'undefined') {
+      if (user) {
+        window.localStorage.setItem(userStorageKey, JSON.stringify(user))
+      } else {
+        window.localStorage.removeItem(userStorageKey)
+      }
+    }
+    _setUser(user)
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const user = window.localStorage.getItem(userStorageKey)
+      if (user) {
+        _setUser(JSON.parse(user) as User)
+        if (['/login', '/register'].includes(router.route)) {
+          router.replace('/')
+        }
+      } else {
+        _setUser(null)
+        if (['/'].includes(router.route)) {
+          router.replace('/login')
+        }
+      }
+    }
+  }, [router])
 
   return (
     <AppDispatchContext.Provider
