@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Alert, Button, Col, Form, Input, Row } from 'antd'
+import { Alert, Button, Col, Form, Input, Row, Typography } from 'antd'
 import { AxiosResponse } from 'axios'
 import { pick } from 'lodash'
 
@@ -10,10 +10,12 @@ import { useAppState, useAppDispatch } from '@lib/context/AppContext'
 import type { User } from '@lib/types'
 import apiService from '@services/api'
 
-type LoginFormValuesType = {
+type FormValuesType = {
   email: string
   password: string
 }
+
+const { Title } = Typography
 
 const Login: FC = () => {
   const { user } = useAppState()
@@ -22,7 +24,7 @@ const Login: FC = () => {
   const [formError, setFormError] = useState<string | null>(null)
   const router = useRouter()
 
-  const handleOnFinish = (values: LoginFormValuesType) => {
+  const handleOnFinish = (values: FormValuesType) => {
     setIsSubmitting(true)
 
     const login = async () => {
@@ -55,7 +57,7 @@ const Login: FC = () => {
     <Container>
       <Row>
         <Col span={8} offset={8}>
-          <h1>Login</h1>
+          <Title level={3}>Login</Title>
           <Form
             name="login"
             layout="vertical"

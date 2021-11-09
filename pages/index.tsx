@@ -1,8 +1,11 @@
 import React, { FC } from 'react'
+import { Typography } from 'antd'
 
 import Container from '@components/Container'
 import Loader from '@components/Loader'
 import { useAppState } from '@lib/context/AppContext'
+
+const { Title } = Typography
 
 const Home: FC = () => {
   const { user } = useAppState()
@@ -13,7 +16,7 @@ const Home: FC = () => {
 
   return (
     <Container>
-      <h1>Home</h1>
+      <Title>Home</Title>
     </Container>
   )
 }

@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Button, Layout, Menu, Space, Typography } from 'antd'
+import { Button, Layout, Space, Typography } from 'antd'
 import styled from '@emotion/styled'
 
 import { useAppState, useAppDispatch } from '@lib/context/AppContext'
@@ -11,8 +11,7 @@ type Props = {
 }
 
 const { Header, Content } = Layout
-const { SubMenu } = Menu
-const { Title } = Typography
+const { Paragraph, Title } = Typography
 
 const LayoutHeader = styled(Header)`
   background: #1f1f1f;
@@ -38,9 +37,10 @@ const LayoutHeaderBanner = styled('a')`
   }
 `
 
-const LayoutMenu = styled(Menu)``
-
-const LayoutSubMenu = styled(SubMenu)``
+const LayoutUserName = styled(Paragraph)`
+  margin-bottom: 0 !important;
+  color: #ffffff !important;
+`
 
 const MainLayout: FC<Props> = ({ children }) => {
   const { noHeader, user } = useAppState()
@@ -62,13 +62,12 @@ const MainLayout: FC<Props> = ({ children }) => {
             </Link>
           </LayoutTitle>
           {user && (
-            <LayoutMenu mode="horizontal">
-              <LayoutSubMenu key="header-submenu" title={user.name}>
-                <Menu.Item key="logout" onClick={handleLogout}>
-                  Logout
-                </Menu.Item>
-              </LayoutSubMenu>
-            </LayoutMenu>
+            <Space>
+              <LayoutUserName>Hi {user.name}</LayoutUserName>
+              <Button type="primary" ghost onClick={handleLogout}>
+                Logout
+              </Button>
+            </Space>
           )}
           {!user && (
             <Space>
